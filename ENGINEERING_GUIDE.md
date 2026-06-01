@@ -294,17 +294,17 @@ This guide complements the empirical results in `FINDINGS.md` with an engineerin
 ```
 Latency (log scale)
     │
-10s ┤                                    LLM (9.4s)
+10s ┤                           LLM (9.4s, 78.7%)
     │
  1s ┤
     │
-10ms┤         spaCy Entity-aug (~10ms)
+10ms┤               Entity-aug (10ms, 81.9%)
     │
- 1ms┤  SVM/FastText (~2ms)    Rules (~1ms)
+ 1ms┤    Rules (1ms, 66.6%)   FastText (1ms, 84.4%)   SVM (2ms, 86.7%)
     │
     └────────────────────────────────────────
        60%    70%    80%    90%   Accuracy
-              ↑ SVM champion (86.7%)
+                            ↑ SVM champion (86.7%)
 ```
 
 **Critical Finding**: SVM achieves **best accuracy at lowest latency**. No trade-off required.

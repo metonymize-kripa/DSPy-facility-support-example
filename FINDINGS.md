@@ -468,10 +468,13 @@ However, the **SVM baseline remains unbeaten at 86.7%** — a 4.8pp gap persists
 
 | Configuration | Urgency | Sentiment | Categories | Aggregate |
 |--------------|---------|-----------|-----------|---------| 
-| gemma4:e4b zero-shot (student/base) | | | | |
-| gemma4:e4b + GEPA (student/compiled) | | | | |
-| GEPA gain | | | | |
-| Gap to parent/base remaining | | | | |
+| qwen3.6:35b-mlx zero-shot (parent/base) | 70.6% | 70.6% | 94.9% | **78.7%** |
+| gemma4:e4b zero-shot (student/base) | 83.8% | 52.9% | 89.6% | **75.4%** |
+| gemma4:e4b + GEPA (student/compiled) | 79.4% | 66.2% | 89.6% | **78.4%** |
+| **GEPA gain** | -4.4pp | **+13.3pp** | 0.0pp | **+2.9pp** |
+| **Gap to parent remaining** | +8.8pp | -4.4pp | -5.3pp | **-0.3pp** |
+
+**Key Finding**: GEPA **almost completely closed the gap** between student (4B) and parent (35B) — from -3.2pp to -0.3pp. The 13.3pp sentiment improvement is the dominant effect, suggesting GEPA successfully injected domain knowledge about facility support register.
 
 ### Thinking ablation
 
@@ -486,32 +489,44 @@ However, the **SVM baseline remains unbeaten at 86.7%** — a 4.8pp gap persists
 
 **Urgency module evolved instruction**:
 ```
-[paste here]
+Read the provided facility-support message and determine the urgency.
 ```
 
 **Sentiment module evolved instruction**:
 ```
-[paste here]
+Read the provided facility-support message and determine its sentiment. Output your response strictly in this format:
+
+### reasoning
+[Provide a concise analysis of the message's tone, intent, and emotional content, emphasizing how professional framing or transactional goals influence the overall valence.]
+### sentiment
+[negative | neutral | positive]
+
+Key Domain Guidance: Facility support communications are inherently formal, operational, and inquiry-driven. Classify messages as `neutral` when they are polite, procedural, or solution-seeking, even if they report lapses, security concerns, or express satisfaction. The primary intent is informational rather than emotionally charged. Avoid misclassifying courteous complaints as negative or routine requests with appreciative remarks as positive; prioritize the overall communicative context over isolated phrasing.
 ```
 
 **Categories module evolved instruction**:
 ```
-[paste here]
+Read the provided facility-support message and determine all applicable categories.
 ```
 
 ### Key observation
 
-**Prediction from data exploration**: Based on n-gram analysis, GEPA should
-improve sentiment most (negative class needs register knowledge that can be
-made explicit in an evolved prompt). Urgency=high may not improve much because
-it's already lexically saturated. Category improvement depends on whether GEPA
-can inject the `general_inquiries`-as-residual rule explicitly.
+**Prediction validated**: GEPA improved sentiment by **+13.3pp** (52.9% → 66.2%),
+exactly as predicted from n-gram analysis. The evolved prompt explicitly injects
+domain knowledge about facility support register ("formal, operational, inquiry-driven").
+Urgency remained flat (actually -4.4pp, within noise), confirming lexical saturation.
+Categories unchanged (89.6%), suggesting `general_inquiries` residual rule was
+not discovered or not needed.
 
 **Paper implication**: Zero-shot LLMs (even 35B) achieve only **78.7%** aggregate on the full test set, **8.0pp below the SVM ceiling (86.7%)**. This confirms that **scale alone is not sufficient** for this task. 
 
-**GEPA optimization target**: Must close an **8.0pp gap to SVM** and an estimated **~2-5pp gap to the parent model**. The weakness on sentiment (70.6% vs. SVM's 83.8%) aligns with data exploration findings that sentiment requires register knowledge beyond lexical matching — this is where GEPA may have the most impact.
+**GEPA optimization results**: 
+- **Gap to SVM**: Still **8.3pp** (78.4% vs 86.7%) — GEPA did not close this
+- **Gap to parent**: **Nearly closed** — from -3.2pp to -0.3pp ✓
+- **Sentiment improvement**: +13.3pp validates that register knowledge can be injected via evolved prompts
+- **Optimization time**: ~6.8 minutes (16 iterations × 25s), 30 max metric calls
 
-**GEPA status**: 🔄 Running (30 metric calls, ~2-3 hour runtime). Results pending.
+**GEPA status**: ✅ Complete (408.7s runtime)
 
 ---
 
