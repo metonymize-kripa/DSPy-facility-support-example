@@ -228,31 +228,45 @@ This guide complements the empirical results in `FINDINGS.md` with an engineerin
 
 ---
 
-### 2.7 GEPA-Optimized LLM (gemma4:e4b + GEPA) - Pending
+### 2.7 GEPA-Optimized LLM (gemma4:e4b + GEPA) - 78.4%
 
 **Knowledge Injection**: Pre-training + **prompt optimization** using reflection model.
 
 | Aspect | Assessment |
 |--------|------------|
 | **Pre-training** | Massive (student model) |
-| **Training** | **High** — GEPA optimization (hours of reflection model inference) |
-| **Inference** | High (same as zero-shot) |
+| **Training** | **High** — 6.8 minutes, 16 iterations (30 max metric calls) |
+| **Inference** | High (same as zero-shot, ~9.4s) |
 | **Know-how source** | Pre-training + **optimized prompts** + reflection model feedback |
 | **Manual judgment** | Low — automated genetic algorithm optimization |
 | **Maintenance** | Moderate — prompts are code artifacts to version control |
 | **Customization** | Moderate — GEPA adapts prompts to domain automatically |
 | **Generalization** | Unknown — depends on GEPA's ability to generalize from small optimization set |
 
-**Open Question**: Can GEPA close the **8pp gap** to SVM? If yes, it validates prompt optimization as viable. If no, classical ML remains champion.
+**GEPA Results**:
+
+| Metric | Value |
+|--------|-------|
+| **Student base (4B)** | 75.4% |
+| **Student + GEPA** | 78.4% (+2.9pp) |
+| **Parent base (35B)** | 78.7% |
+| **Gap to parent** | -0.3pp (nearly closed) |
+| **Gap to SVM** | -8.3pp (not closed) |
+| **Sentiment improvement** | +13.3pp (52.9% → 66.2%) |
+
+**Key Finding**: GEPA **successfully closes the student-parent gap** (4B ≈ 35B performance), validating that prompt optimization can compensate for model size. The evolved sentiment prompt injects domain knowledge about facility support register ("formal, operational, inquiry-driven").
+
+**Limitation**: Despite closing the gap to the 35B parent, GEPA still trails SVM by **8.3pp** (78.4% vs 86.7%). Prompt optimization ≠ classical ML superiority.
 
 **When to use**:
 - Have unlabeled data + larger teacher model (Qwen 35B)
 - Want LLM flexibility with better task performance
-- Can afford optimization compute cost
+- Can afford optimization compute cost (~7 minutes for this task)
 
 **When to avoid**:
+- Need to beat SVM (86.7%) — classical ML still wins
 - Optimization cost exceeds value (use zero-shot or classical ML)
-- Need immediate deployment (optimization takes hours)
+- Need immediate deployment (optimization takes hours for larger tasks)
 
 ---
 
@@ -502,4 +516,4 @@ Start
 ---
 
 *Last updated: 2026-06-01*
-*GEPA results pending — update section 2.7 when available*
+*GEPA results: 78.4% (+2.9pp), gap to parent -0.3pp, gap to SVM -8.3pp*
