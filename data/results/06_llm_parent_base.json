@@ -1,0 +1,15 @@
+{
+  "approach": "llm_gemma4",
+  "variant": "06_llm_parent_base",
+  "model": "ollama/qwen3.6:35b-mlx",
+  "n_test": 68,
+  "aggregate": 0.7868,
+  "urgency": 0.7059,
+  "sentiment": 0.7059,
+  "categories": 0.9485,
+  "cost_per_query_usd": 0.0,
+  "latency_p50_ms": null,
+  "latency_p95_ms": null,
+  "training_examples_required": 0,
+  "notes": "parent/base (gemma4:26b zero-shot)"
+}

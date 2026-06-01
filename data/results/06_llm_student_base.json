@@ -1,0 +1,15 @@
+{
+  "approach": "llm_gemma4",
+  "variant": "06_llm_student_base",
+  "model": "ollama/gemma4:e4b",
+  "n_test": 20,
+  "aggregate": 0.7667,
+  "urgency": 0.75,
+  "sentiment": 0.65,
+  "categories": 0.9,
+  "cost_per_query_usd": 0.0,
+  "latency_p50_ms": null,
+  "latency_p95_ms": null,
+  "training_examples_required": 0,
+  "notes": "zero-shot; think=off; num_ctx=8192"
+}
