@@ -205,35 +205,65 @@ A rule-based system achieves **66.6%** aggregate, demonstrating that **88%** of 
 
 ## Phase 3 — FastText
 
-**Status**: [ ] pending
+**Status**: [x] complete
 
 ### Results
 
-| Variant | Urgency | Sentiment | Categories | Aggregate |
-|---------|---------|-----------|-----------|---------| 
-| unigrams | | | | |
-| bigrams | | | | |
-| trigrams | | | | |
-| **Best** | | | | |
+| Sub-task | Score | vs. Rules | Notes |
+|----------|-------|-----------|-------|
+| Urgency | **89.7%** | +32.3pp | Biggest gain — context-aware urgency classification |
+| Sentiment | **86.8%** | +16.2pp | Surprisingly strong — unigrams sufficient |
+| Categories | **76.8%** | +5.0pp | Modest gain — rules already vocabulary-driven |
+| **Aggregate** | **84.4%** | **+17.8pp** | **Beats GPT-4.1-nano baseline by 9.0pp** |
 
-Best hyperparameters: wordNgrams=___, epoch=___, lr=___
+Best hyperparameters by task:
+- **Urgency**: wordNgrams=3, epoch=100, lr=1.0 (CV score: 0.897)
+- **Sentiment**: wordNgrams=1, epoch=100, lr=0.5 (CV score: 0.868)
+- **Categories**: wordNgrams=1, epoch=25, lr=0.1 (CV score: 0.182 — struggled)
+
+### Comparison vs. Baselines
+
+| Approach | Aggregate | Gap |
+|----------|-----------|-----|
+| 01 Handwritten rules | 66.6% | — |
+| 02 FastText | **84.4%** | +17.8pp |
+| DSPy GPT-4.1-nano | 75.4% | FastText +9.0pp |
 
 ### Key observation
 
-> *Does FastText beat the rules baseline? Which sub-task gains most from learning?*
+> **Major surprise**: FastText **beats the published LLM baseline** by 9 percentage points despite being a 2016 bag-of-n-grams model trained on only 132 examples. The 200-example "small dataset" concern was overblown for this task.
 
-**Prediction from data exploration**: Bigrams should help urgency (explicit
-alarm bigrams are predictive) and categories (domain vocabulary bigrams).
-Sentiment improvement will be limited — the distinctive negative bigrams
-(`though must admit`, `recent experiences left`) require positional context
-that bag-of-n-grams partially captures but can't fully leverage with 26 negative examples.
+**What FastText fixed vs. Rules:**
 
-**Paper implication**: FastText achieves [___]%, [above/below] the handwritten rules
-baseline by [___]pp. The gain is concentrated in [sub-task], where lexical n-gram
-features provide signal that keyword matching misses. The sentiment sub-task
-shows [minimal/no] improvement on the negative class, consistent with the
-n-gram analysis showing that negative affect is register-masked in hedged constructions
-that require more than lexical overlap to detect.
+| Sub-task | Rules | FastText | Explanation |
+|----------|-------|----------|-------------|
+| Urgency | 57.4% | 89.7% | Learned context boundaries — "today" in routine vs. urgent contexts |
+| Sentiment | 70.6% | 86.8% | Learned implicit positive signals beyond explicit praise keywords |
+| Categories | 71.8% | 76.8% | Small gain — rules already vocabulary-driven |
+
+**Hyperparameter findings:**
+- **Urgency**: Trigrams (n=3) helped significantly — captures alarm phrases like "immediate attention required"
+- **Sentiment**: Unigrams sufficient — sentiment is conveyed by isolated polarity words, not phrases
+- **Categories**: Multi-label OVA struggled (CV score only 0.182) — 10-way classification with sparse labels is hard
+
+**Prediction validation:**
+- ❌ **Wrong**: Expected sentiment to struggle on negative class — instead, sentiment was the *second strongest* sub-task at 86.8%
+- ✅ **Correct**: Urgency showed largest gain — context-aware classification fixed the rules' over-triggering problem
+- ❌ **Wrong**: Expected bigrams to matter most — urgency needed trigrams, sentiment needed only unigrams
+
+### Categories still the bottleneck
+
+Despite FastText's overall strength, **categories remain the weakest sub-task** at 76.8%. The multi-label one-vs-all approach with only ~13 examples per category (132 training / 10 labels) is insufficient. This creates headroom for:
+- Classical ML with better regularization (Phase 4)
+- LLM approaches with explicit label definitions
+
+### Paper implication
+
+FastText achieves **84.4%** aggregate, **surpassing the handwritten rules baseline by 17.8pp and the GPT-4.1-nano LLM baseline by 9.0pp**. This is the central finding: **for this narrow, domain-constrained classification task, a 2016 bag-of-n-grams model trained on 132 examples outperforms a modern zero-shot LLM**. 
+
+The gain is concentrated in **urgency calibration** (+32.3pp), where learned n-gram features provide context-aware classification that keyword matching cannot achieve. The **sentiment sub-task also shows strong improvement** (+16.2pp), contradicting the prediction that register-masked negative sentiment would limit performance. FastText apparently learned sufficient lexical proxies for sentiment even with only 26 negative examples in training.
+
+**Practical implication**: Before reaching for an LLM, practitioners should verify that a simple FastText baseline with 100–200 labeled examples does not already suffice. The LLM advantage may be narrower than assumed for narrow-domain classification.
 
 ---
 

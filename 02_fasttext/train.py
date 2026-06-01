@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["requests", "fasttext-wheel"]
+# dependencies = ["requests", "fasttext-wheel", "numpy<2.0"]
 # ///
 """
 02_fasttext/train.py
