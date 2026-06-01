@@ -1,0 +1,13 @@
+{
+  "approach": "spacy_textcat_standard",
+  "train_epochs": 20,
+  "dropout": 0.2,
+  "n_train_val": 132,
+  "n_test": 68,
+  "urgency": 0.8235294117647058,
+  "sentiment": 0.8235294117647058,
+  "categories": 0.5470588235294119,
+  "aggregate": 0.7313725490196079,
+  "n": 68,
+  "failures": 0
+}

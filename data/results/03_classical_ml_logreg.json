@@ -1,0 +1,15 @@
+{
+  "approach": "classical_ml",
+  "variant": "logreg",
+  "model": "TF-IDF + logreg",
+  "n_test": 68,
+  "aggregate": 0.7392,
+  "urgency": 0.8235,
+  "sentiment": 0.6176,
+  "categories": 0.7765,
+  "cost_per_query_usd": 0.0,
+  "latency_p50_ms": 2,
+  "latency_p95_ms": 5,
+  "training_examples_required": 132,
+  "notes": "TF-IDF ngram(1,2) max_features=8000 sublinear_tf; logreg"
+}

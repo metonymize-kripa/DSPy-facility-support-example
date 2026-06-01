@@ -1,0 +1,15 @@
+{
+  "approach": "spacy_entity_augmented",
+  "variant": "entity_features_tfidf_logreg",
+  "model": "en_core_web_sm + PhraseMatcher",
+  "n_test": 68,
+  "aggregate": 0.8191,
+  "urgency": 0.8088,
+  "sentiment": 0.7647,
+  "categories": 0.8838,
+  "cost_per_query_usd": 0.0,
+  "latency_p50_ms": 5,
+  "latency_p95_ms": 15,
+  "training_examples_required": 132,
+  "notes": "17 entity groups + TF-IDF ngram(1,2); LogReg C=1.0"
+}

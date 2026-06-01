@@ -17,7 +17,7 @@ Results saved to:
 
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["spacy>=3.7", "scikit-learn>=1.4"]
+# dependencies = ["spacy>=3.7", "scikit-learn>=1.4", "click>=8.0"]
 # ///
 
 import sys
@@ -79,7 +79,7 @@ def build_and_train(train_docs, dev_docs, all_labels: list[str], task: str):
     ]
 
     best_score = 0.0
-    best_nlp = None
+    best_nlp = nlp.to_bytes()  # Save initial state as fallback
 
     for epoch in range(TRAIN_EPOCHS):
         random.shuffle(train_examples)

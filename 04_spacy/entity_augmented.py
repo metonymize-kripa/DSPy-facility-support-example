@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["requests", "spacy", "scikit-learn", "numpy"]
+# dependencies = ["requests", "spacy", "scikit-learn", "numpy", "click>=8.0"]
 # ///
 """
 04_spacy/entity_augmented.py
@@ -68,8 +68,10 @@ def main():
     try:
         nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])
     except OSError:
-        print("Run: python -m spacy download en_core_web_sm")
-        sys.exit(1)
+        print("Model not found. Downloading en_core_web_sm...")
+        from spacy.cli import download
+        download("en_core_web_sm")
+        nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])
 
     matcher = build_matcher(nlp)
 

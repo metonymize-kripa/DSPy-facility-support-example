@@ -1,0 +1,163 @@
+{
+  "n": 200,
+  "urgency": {
+    "high": 53,
+    "low": 84,
+    "medium": 63
+  },
+  "sentiment": {
+    "neutral": 113,
+    "positive": 61,
+    "negative": 26
+  },
+  "categories": {
+    "routine_maintenance_requests": 53,
+    "customer_feedback_and_complaints": 41,
+    "training_and_support_requests": 23,
+    "quality_and_safety_concerns": 39,
+    "sustainability_and_environmental_practices": 48,
+    "cleaning_services_scheduling": 24,
+    "specialized_cleaning_services": 48,
+    "emergency_repair_services": 23,
+    "facility_management_issues": 35,
+    "general_inquiries": 46
+  },
+  "ngrams": {
+    "urgency_ngrams": {
+      "low": {
+        "bigrams": [
+          "provide details",
+          "sustainability environmental",
+          "specifically interested",
+          "practices sender",
+          "out inquire",
+          "available website",
+          "gather information",
+          "interested learning"
+        ],
+        "trigrams": [
+          "sustainability environmental practices",
+          "reaching out inquire",
+          "subject inquiry management",
+          "information available website",
+          "wanted gather information",
+          "training programs offer",
+          "reviewed information available",
+          "subject inquiry sustainability"
+        ]
+      },
+      "medium": {
+        "bigrams": [
+          "maintenance hvac",
+          "subject scheduled",
+          "encountered issue",
+          "believe prudent",
+          "come take",
+          "seems small",
+          "schedule maintenance",
+          "minor plumbing"
+        ],
+        "trigrams": [
+          "prompt response continued",
+          "maintenance hvac system",
+          "routine maintenance hvac",
+          "subject scheduled maintenance",
+          "scheduled maintenance request",
+          "steps address issue",
+          "come take look",
+          "recently encountered issue"
+        ]
+      },
+      "high": {
+        "bigrams": [
+          "subject urgent",
+          "forward swift",
+          "subject immediate",
+          "swift response",
+          "immediate assistance",
+          "attention required",
+          "given urgency",
+          "urgency situation"
+        ],
+        "trigrams": [
+          "look forward swift",
+          "forward swift response",
+          "immediate attention required",
+          "subject immediate attention",
+          "immediate assistance required",
+          "given urgency situation",
+          "subject urgent assistance",
+          "however currently facing"
+        ]
+      }
+    },
+    "sentiment_ngrams": {
+      "positive": {
+        "bigrams": [
+          "truly dedication",
+          "dedication professionalism",
+          "professionalism bring",
+          "done fantastic",
+          "maintain high",
+          "maintaining residential",
+          "impressed quality",
+          "love get"
+        ],
+        "trigrams": [
+          "truly dedication professionalism",
+          "dedication professionalism bring",
+          "customer past year",
+          "always done fantastic",
+          "done fantastic job",
+          "maintain high standards",
+          "maintaining residential complex",
+          "provided exceptional service"
+        ]
+      },
+      "neutral": {
+        "bigrams": [
+          "wanted gather",
+          "reviewed information",
+          "inquire sustainability",
+          "satisfied provided",
+          "information first",
+          "sender manage",
+          "immediate issues",
+          "website detailed"
+        ],
+        "trigrams": [
+          "wanted gather information",
+          "reviewed information available",
+          "inquire sustainability environmental",
+          "appreciated time assistance",
+          "steps address issue",
+          "utilizing maintenance needs",
+          "website detailed insights",
+          "inquiry management sender"
+        ]
+      },
+      "negative": {
+        "bigrams": [
+          "though must",
+          "must admit",
+          "recent experiences",
+          "left quite",
+          "write sender",
+          "rectify situation",
+          "quite disappointed",
+          "cleaning crew"
+        ],
+        "trigrams": [
+          "though must admit",
+          "recent experiences left",
+          "urgent immediate attention",
+          "company claims premier",
+          "sustainability practices though",
+          "practices though must",
+          "experiences left quite",
+          "consistent cleaning schedule"
+        ]
+      }
+    }
+  }
+}

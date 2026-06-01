@@ -1,0 +1,15 @@
+{
+  "approach": "handwritten_rules",
+  "variant": "regex_keyword_cascade",
+  "model": null,
+  "n_test": 68,
+  "aggregate": 0.6657,
+  "urgency": 0.5735,
+  "sentiment": 0.7059,
+  "categories": 0.7176,
+  "cost_per_query_usd": 0.0,
+  "latency_p50_ms": 1,
+  "latency_p95_ms": 2,
+  "training_examples_required": 0,
+  "notes": "Regex/keyword cascade; subject-line priority; register-trap sentiment heuristic"
+}

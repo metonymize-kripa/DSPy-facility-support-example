@@ -1,0 +1,15 @@
+{
+  "approach": "classical_ml",
+  "variant": "nb",
+  "model": "TF-IDF + nb",
+  "n_test": 68,
+  "aggregate": 0.8647,
+  "urgency": 0.8529,
+  "sentiment": 0.8529,
+  "categories": 0.8882,
+  "cost_per_query_usd": 0.0,
+  "latency_p50_ms": 2,
+  "latency_p95_ms": 5,
+  "training_examples_required": 132,
+  "notes": "TF-IDF ngram(1,2) max_features=8000 sublinear_tf; nb"
+}

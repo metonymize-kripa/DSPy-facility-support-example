@@ -1,0 +1,15 @@
+{
+  "approach": "fasttext",
+  "variant": "bag_of_ngrams",
+  "model": "fasttext",
+  "n_test": 68,
+  "aggregate": 0.8441,
+  "urgency": 0.8971,
+  "sentiment": 0.8676,
+  "categories": 0.7676,
+  "cost_per_query_usd": 0.0,
+  "latency_p50_ms": 1,
+  "latency_p95_ms": 3,
+  "training_examples_required": 132,
+  "notes": "FastText multi-label OVA for categories; best params: {'urgency': {'best_params': {'wordNgrams': 3, 'epoch': 100, 'lr': 1.0}, 'test_precision': 0.8971}, 'sentiment': {'best_params': {'wordNgrams': 1, 'epoch': 100, 'lr': 0.5}, 'test_precision': 0.8676}, 'categories': {'best_params': {'wordNgrams': 1, 'epoch': 25, 'lr': 0.1}, 'test_precision': 0.1824}}"
+}

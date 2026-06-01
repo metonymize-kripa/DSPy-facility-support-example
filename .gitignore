@@ -3,8 +3,6 @@
 __pycache__/
 *.pyc
 *.pyo
-data/dataset.json
-data/results/
 *.fasttext
 models/
 .uv/

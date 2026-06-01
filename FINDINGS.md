@@ -348,30 +348,72 @@ The 86.7% SVM result sets a **strong non-LLM ceiling**. The remaining 8 phases m
 
 ## Phase 5 — spaCy / Entity-Augmented
 
-**Status**: [ ] pending
+**Status**: [x] complete
 
 ### Results
 
-| Variant | Urgency | Sentiment | Categories | Aggregate |
-|---------|---------|-----------|-----------|---------| 
-| textcat_multilabel | | | | |
-| entity-augmented | | | | |
+| Variant | Urgency | Sentiment | Categories | **Aggregate** | vs. Best (SVM) |
+|---------|---------|-----------|-----------|---------------|----------------|
+| textcat_multilabel (neural) | 82.4% | 82.4% | **54.7%** ❌ | **73.1%** | -13.6pp |
+| entity-augmented (neuro-symbolic) | 80.9% | 76.5% | **88.4%** | **81.9%** | -4.8pp |
 
-### Entity augmentation delta (vs. plain TF-IDF LogReg)
+### Entity features (17 groups extracted)
 
-- Urgency delta: ___pp (expected positive — domain knowledge)
-- Sentiment delta: ___pp
-- Categories delta: ___pp
+| Entity Group | Matches | Purpose |
+|--------------|---------|---------|
+| eq_hvac | 44 | Equipment → category mapping |
+| eq_cleaning_general | 68 | Equipment → category mapping |
+| urgency_high | 47 | Domain knowledge for urgency |
+| urgency_medium | 28 | Domain knowledge for urgency |
+| urgency_low | 39 | Domain knowledge for urgency |
+| sentiment_positive | 58 | Register markers |
+| sentiment_negative | 7 | Register markers |
+| intent_scheduling | 31 | Intent disambiguation |
+| sustainability | 39 | Category mapping |
+
+### Entity augmentation delta (vs. plain TF-IDF LogReg 73.9%)
+
+| Sub-task | LogReg | Entity-Aug | Delta |
+|----------|--------|-----------:|-------|
+| Urgency | 82.4% | 80.9% | **-1.5pp** ❌ |
+| Sentiment | 61.8% | 76.5% | **+14.7pp** ✅ |
+| Categories | 77.6% | 88.4% | **+10.8pp** ✅ |
+| Aggregate | 73.9% | 81.9% | **+8.0pp** ✅ |
+
+### Key findings
+
+**1. Entity augmentation beats pure neural spaCy by 8.8pp** (81.9% vs. 73.1%). The neuro-symbolic approach is superior to end-to-end neural training on this small dataset.
+
+**2. Categories saw dramatic improvement** — the neural textcat's catastrophic failure (54.7%) is rescued by entity features (88.4%), a **+33.7pp gain**. The structured entity vocabulary provides the multi-label signal that pure neural training misses.
+
+**3. Sentiment improved significantly** (+14.7pp) — entity features for positive/negative markers help LogReg overcome its weakness on this sub-task.
+
+**4. Urgency slightly decreased** (-1.5pp) — this is surprising. The explicit urgency markers (high/medium/low) in entity features may conflict with the learned TF-IDF patterns, causing minor degradation.
+
+**5. Still trails SVM by 4.8pp** — despite the entity features, the combination of TF-IDF + LogReg + entities (81.9%) doesn't surpass pure TF-IDF + SVM (86.7%). The non-linear SVM decision boundary extracts more from text features than entity augmentation provides.
 
 ### Key observation
 
-> *Does adding structured entity features improve urgency specifically?
-> This is the key test of the neuro-symbolic hypothesis.*
+> **Entity augmentation rescues categories but doesn't improve urgency.** The neuro-symbolic hypothesis is **partially confirmed**: structured domain knowledge (equipment types, urgency markers, intent signals) dramatically improves multi-label classification (+33.7pp on categories), but TF-IDF alone already captures urgency signals effectively. The 4.8pp gap to SVM suggests that **feature engineering (entities) is less powerful than kernel methods for this task**.
 
-**Paper implication**: Entity augmentation [improves/does not improve] urgency
-accuracy by [___]pp compared to plain TF-IDF, [supporting/contradicting] the
-hypothesis that domain knowledge (Type 2) can be injected cheaply via a domain
-vocabulary without an LLM.
+**Prediction validation:**
+- ✅ **Correct**: Entity features improve categories significantly — multi-label benefits from structured knowledge
+- ❌ **Wrong**: Expected urgency to improve most from domain knowledge — instead it degraded slightly (-1.5pp)
+- ✅ **Correct**: Entity-augmented beats pure neural spaCy — neuro-symbolic > end-to-end on small data
+
+### Paper implication
+
+spaCy entity-augmented achieves **81.9%** aggregate, an **8.0pp improvement over plain LogReg** and an **8.8pp improvement over pure neural textcat**. This demonstrates that **domain knowledge injection via entity features is valuable for multi-label classification** (+33.7pp on categories), even when the base classifier (LogReg) is suboptimal.
+
+However, the **SVM baseline remains unbeaten at 86.7%** — a 4.8pp gap persists. This suggests that:
+1. For narrow-domain text classification, **kernel methods may be more effective than feature engineering**
+2. The LLM advantage (if any) must be measured against 86.7%, not against weaker baselines
+
+**Practical hierarchy updated:**
+1. **SVM (TF-IDF)** — 86.7%, still state-of-the-art for this dataset
+2. **Entity-augmented spaCy** — 81.9%, best neuro-symbolic approach
+3. **FastText/Naive Bayes** — 84.4–86.5%, strong alternatives
+4. **Pure neural spaCy** — 73.1%, avoid on small datasets
 
 ---
 
