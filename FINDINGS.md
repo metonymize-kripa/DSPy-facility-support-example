@@ -139,46 +139,67 @@ The label distribution reveals three distinct difficulty drivers:
 
 ## Phase 2 — Handwritten Rules
 
-**Status**: [ ] pending
+**Status**: [x] complete
 
 ### Results
 
 | Sub-task | Accuracy |
 |----------|---------| 
-| Urgency | |
-| Sentiment | |
-| Categories | |
-| **Aggregate** | |
+| Urgency | 57.4% |
+| Sentiment | 70.6% |
+| Categories | 71.8% |
+| **Aggregate** | **66.6%** |
 
-Published baseline (GPT-4.1-nano zero-shot): **75.4%**
-Rules gap vs. baseline: **___pp**
-
-### Which rules fired most
-
-*(Top 5 rules by frequency)*
+Published baseline (GPT-4.1-nano zero-shot): **75.4%**  
+Rules gap vs. baseline: **8.8pp**
 
 ### Where rules failed
 
-Most common failure modes:
-1. **Urgency**: *(e.g., implicit urgency from domain context missed)*
-2. **Sentiment**: *(e.g., polite complaints classified as neutral/positive)*
-3. **Categories**: *(e.g., intent-based disambiguation — scheduling vs. complaint)*
+| Failure Mode | Count | Pattern |
+|-------------|-------|---------|
+| **Urgency over-triggering** | 29 errors | `medium → high`: 15x, `low → high`: 8x |
+| **Positive sentiment under-detection** | 11 errors | `positive → neutral`: 11x |
+| **Category false positives** | High FP rate | 3 categories at 100% recall but <35% precision |
+
+**Root cause analysis:**
+1. **Urgency keywords too broad**: Words like "today", "this morning" in routine contexts trigger false high-urgency predictions
+2. **Category vocabularies too permissive**: No negative constraints to exclude false matches
+3. **Positive sentiment regex too narrow**: Misses moderate appreciation ("thank you", "good work")
+
+### Category precision / recall breakdown
+
+| Category | Precision | Recall | Assessment |
+|----------|-----------|--------|------------|
+| specialized_cleaning_services | 100% | 70.6% | Well-calibrated vocabulary |
+| cleaning_services_scheduling | 77.8% | 87.5% | Good balance |
+| customer_feedback_and_complaints | 75.0% | 23.1% | Low recall — missing complaint patterns |
+| emergency_repair_services | 58.8% | 83.3% | Acceptable |
+| general_inquiries | 45.2% | 87.5% | High recall, needs exclusion patterns |
+| facility_management_issues | 45.0% | 81.8% | Over-fires on management keywords |
+| sustainability_and_environmental_practices | 31.6% | 92.3% | Eco-vocabulary too broad |
+| routine_maintenance_requests | 33.3% | 100% | Catches all, but fires everywhere |
+| quality_and_safety_concerns | 34.6% | 100% | Same pattern — overly permissive |
+| training_and_support_requests | 12.9% | 100% | Worst precision — "help" is too generic |
 
 ### Key observation
 
-> *Fill in after running: does the rules approach beat, match, or fall short of
-> your prior expectation? Which sub-task surprised you most?*
+> **Surprising finding**: Negative sentiment was actually well-handled (only 1 error: negative→neutral). The predicted weakness from data exploration (register-masked complaints) did not materialize as the primary failure mode. Instead, **positive sentiment under-detection** and **urgency over-triggering** dominated the error budget.
 
-**Prediction from data exploration**: Rules should do well on urgency=high
-(explicit bigrams are strong), poorly on sentiment=negative (register-masked),
-and moderately on categories (vocabulary-driven but intent-disambiguation cases exist).
-Predicted aggregate: 65–72%.
+**Prediction validation:**
+- ✅ Aggregate 66.6% falls within predicted 65–72% range
+- ❌ Sentiment=negative was **not** the main bottleneck (only 1 error vs. 11 for positive)
+- ❌ Urgency precision was worse than expected — high recall but 42.6% error rate overall
 
-**Paper implication**: A rule-based system achieves [___]% aggregate, demonstrating
-that [fraction]% of the task is solvable by pattern matching alone. The sentiment
-sub-task is the primary bottleneck for rules, confirming the Type 3 knowledge gap
-identified in the conceptual framework. The urgency result [confirms/surprises] the
-n-gram finding that high-urgency language is lexically explicit.
+### Recommendations for rule refinement
+
+If iterating on rules:
+1. **Urgency**: Add negative contexts that demote "high" — e.g., "scheduled for today" should not trigger emergency
+2. **Categories**: Add exclusion patterns — `training_and_support` should require both help-seeking AND knowledge-seeking language
+3. **Sentiment**: Expand positive vocabulary to include gratitude expressions ("thank you", "grateful for")
+
+### Paper implication
+
+A rule-based system achieves **66.6%** aggregate, demonstrating that **88%** of the DSPy baseline is solvable by pattern matching alone (66.6/75.4). The **sentiment sub-task was not the primary bottleneck** — contrary to the Type 3 knowledge gap hypothesis, the explicit complaint keywords captured most negative cases. The **urgency result surprises** the n-gram finding: while high-urgency language is lexically explicit, the rules fail on **precision** (over-triggering) not recall. The 8.8pp gap to the LLM baseline is concentrated in **urgency calibration** and **positive sentiment detection** — both addressable by context-aware models with learned boundaries rather than pure keyword matching.
 
 ---
 
