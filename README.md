@@ -121,4 +121,4 @@ uv run --group eval 07_evaluation/compare_all.py
 
 ## Authors
 
-Kripa & Wlodek Zadrozny (UNC Charlotte)
+Kripa & TBC(Wlodek)
