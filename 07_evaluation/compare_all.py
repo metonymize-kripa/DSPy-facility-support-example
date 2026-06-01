@@ -22,10 +22,11 @@ from pathlib import Path
 RESULT_FILES = [
     ("Handwritten rules",        "01_handwritten_rules.json"),
     ("FastText",                 "02_fasttext.json"),
-    ("Classical ML (best)",      "03_classical_ml_best.json"),
+    ("Classical ML (SVM)",       "03_classical_ml_svm.json"),
     ("spaCy entity-augmented",   "04_spacy_entity_augmented.json"),
     ("spaCy textcat",            "04_spacy_textcat.json"),
-    ("gemma4:26b zero-shot",     "06_llm_parent_base.json"),
+    ("Cobweb clustering",        "05_cobweb.json"),
+    ("qwen3.6:35b-mlx zero-shot", "06_llm_parent_base.json"),
     ("gemma4:e4b zero-shot",     "06_llm_student_base.json"),
     ("gemma4:e4b + GEPA",        "06_llm_student_compiled.json"),
 ]

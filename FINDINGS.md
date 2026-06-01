@@ -680,16 +680,18 @@ This validates the design-space study's core thesis: **For narrow-domain text cl
 ```
 Approach                    Aggregate  Urgency  Sentiment  Categories  Train N
 ─────────────────────────────────────────────────────────────────────────────
-01 Handwritten rules
-02 FastText
-03 Classical ML (best)
-04 spaCy textcat
-04 spaCy entity-augmented
-05 Cobweb (keywords)
-06 Gemma4:e4b zero-shot
-06 Gemma4:26b zero-shot
-06 Gemma4:e4b + GEPA
+01 Handwritten rules         66.6%      57.4%    70.6%      71.8%       0
+02 FastText                  84.4%      89.7%    86.8%      76.8%       132
+03 Classical ML (SVM)        86.7%      88.2%    83.8%      87.9%       132
+04 spaCy textcat             73.1%      82.4%    82.4%      54.7%       132
+04 spaCy entity-augmented    81.9%      80.9%    76.5%      88.4%       132
+05 Cobweb (keywords)         54.9%      32.4%    55.9%      76.5%       132
+06 gemma4:e4b zero-shot      76.7%*     75.0%    65.0%      90.0%       0
+06 qwen3.6:35b-mlx zero-shot 78.7%      70.6%    70.6%      94.9%       0
+06 gemma4:e4b + GEPA         (pending)
 ── GPT-4.1-nano zero-shot (published) ─────────────── 75.4% ─────────────────
+─────────────────────────────────────────────────────────────────────────────
+*20-example subset
 ```
 
 ### Performance ladder
