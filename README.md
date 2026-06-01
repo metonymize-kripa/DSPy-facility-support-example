@@ -25,27 +25,39 @@ References:
 Canonical metric: mean(urgency exact-match, sentiment exact-match, categories 10-way binary accuracy).
 Published DSPy baseline (GPT-4.1-nano, zero-shot): **75.4%**.
 
+### Key Results (this study)
+
+| Approach | Aggregate | Latency |
+|----------|-----------|---------|
+| **SVM (TF-IDF)** | **86.7%** 🏆 | 2ms |
+| FastText | 84.4% | 1ms |
+| Entity-augmented spaCy | 81.9% | 10ms |
+| qwen3.6:35b-mlx zero-shot | 78.7% | ~9.4s |
+| gemma4:e4b + GEPA | 78.4% | ~9.4s |
+| Handwritten rules | 66.6% | 1ms |
+
+**Finding**: Classical ML (SVM) beats zero-shot LLMs and GEPA-optimized prompts on this narrow-domain task. See `FINDINGS.md` and `ENGINEERING_GUIDE.md` for detailed analysis.
+
 ---
 
-## The LLM Axis: Gemma4 via Ollama
+## The LLM Axis: Local Models via Ollama
 
-The LLM experiments are built around Google's **Gemma4** model family, run locally via Ollama.
-No external API keys are required for the core LLM experiments.
+The LLM experiments use Google's **Gemma4** (4B) as the student model and **Qwen3.6** (35B) as the reflection/parent model, run locally via Ollama. No external API keys required.
 
 | Model | Role in experiment |
 |-------|--------------------|
-| `gemma4:e4b` | **Student** — small, fast, cheap to run |
-| `gemma4:26b` | **Teacher/Parent** — larger, used as reflection model in GEPA and as the upper reference |
+| `gemma4:e4b` (4B) | **Student** — small, fast, cheap to run |
+| `qwen3.6:35b-mlx` (35B) | **Parent/Reflection** — larger model for GEPA optimization |
 
 The primary LLM experiment is a three-way comparison:
 
 | Configuration | Model | Prompt |
 |---------------|-------|--------|
-| `parent/base` | gemma4:26b | zero-shot |
+| `parent/base` | qwen3.6:35b-mlx | zero-shot |
 | `student/base` | gemma4:e4b | zero-shot |
 | `student/compiled` | gemma4:e4b | GEPA-optimised |
 
-Central question: **does GEPA prompt optimisation on gemma4:e4b close the gap to gemma4:26b zero-shot?**
+Central question: **does GEPA prompt optimisation on gemma4:e4b close the gap to qwen3.6:35b-mlx zero-shot?**
 
 ---
 
@@ -62,7 +74,6 @@ Central question: **does GEPA prompt optimisation on gemma4:e4b close the gap to
 ├── 02_fasttext/              # FastText bag-of-n-grams
 ├── 03_classical_ml/          # TF-IDF + LogReg / SVM / Naive Bayes
 ├── 04_spacy/                 # spaCy textcat + entity-augmented hybrid
-├── 05_cobweb_dm/             # Cobweb conceptual clustering (unsupervised)
 ├── 06_llm/                   # Gemma4 via Ollama, DSPy/GEPA optimisation
 ├── 07_evaluation/            # Cross-approach comparison, plots, failure analysis
 │
@@ -71,6 +82,8 @@ Central question: **does GEPA prompt optimisation on gemma4:e4b close the gap to
 │
 ├── pyproject.toml            # uv project root — all dependency groups
 ├── CONCEPTUAL_FRAMEWORK.md   # First-principles problem analysis
+├── ENGINEERING_GUIDE.md      # Engineering trade-offs and recommendations
+├── FINDINGS.md               # Detailed experimental results
 └── .env.example              # Optional API key template
 ```
 
@@ -95,7 +108,7 @@ uv run --group fasttext 02_fasttext/train.py
 uv run --group classical 03_classical_ml/train_eval.py
 
 # LLM: Gemma4 base comparison (Ollama must be running)
-ollama pull gemma4:e4b && ollama pull gemma4:26b
+ollama pull gemma4:e4b && ollama pull qwen3.6:35b-mlx
 uv run --group llm 06_llm/compare_base.py
 
 # LLM: GEPA optimisation
@@ -117,8 +130,7 @@ uv run --group eval 07_evaluation/compare_all.py
 | `fasttext` | FastText training + inference |
 | `classical` | scikit-learn classifiers |
 | `spacy` | spaCy text classification pipelines |
-| `cobweb` | Cobweb conceptual clustering |
-| `llm` | DSPy + GEPA + Ollama/Gemma4 |
+| `llm` | DSPy + GEPA + Ollama |
 | `eval` | Cross-approach evaluation and plotting |
 
 ---
