@@ -18,6 +18,10 @@ Given an email to a facility support organisation, predict:
 
 Dataset: [Meta llama-prompt-ops facility-support-analyzer](https://github.com/meta-llama/llama-prompt-ops/tree/main/use-cases/facility-support-analyzer) — 200 labeled emails.
 
+References:
+- Databricks and UC Berkeley guys: https://dspy.ai/tutorials/gepa_facilitysupportanalyzer/
+- Meta-llama guys: https://github.com/meta-llama/prompt-ops
+
 Canonical metric: mean(urgency exact-match, sentiment exact-match, categories 10-way binary accuracy).
 Published DSPy baseline (GPT-4.1-nano, zero-shot): **75.4%**.
 
