@@ -20,7 +20,7 @@ Results saved to:
 
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["concept-formation>=1.0", "scikit-learn>=1.4"]
+# dependencies = ["concept-formation<=0.3.9", "scikit-learn>=1.4", "requests"]
 # ///
 
 import sys
@@ -67,6 +67,10 @@ def cluster_purity(tree, instances_with_labels, label_key: str) -> dict:
         concept_id = id(concept)
         if isinstance(labels, list):
             concept_labels[concept_id].extend(labels)
+        elif isinstance(labels, dict):
+            # For categories dict, convert to tuple of active labels
+            active = tuple(sorted([k for k, v in labels.items() if v]))
+            concept_labels[concept_id].append(active)
         else:
             concept_labels[concept_id].append(labels)
 
