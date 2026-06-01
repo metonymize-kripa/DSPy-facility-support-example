@@ -417,86 +417,6 @@ However, the **SVM baseline remains unbeaten at 86.7%** — a 4.8pp gap persists
 
 ---
 
-## Phase 6 — Cobweb / Conceptual Clustering
-
-**Status**: [x] complete
-
-### Results: TF-IDF Cobweb (raw text features)
-
-| Task | Mean Purity | Max Purity | High Purity (≥0.8) |
-|------|-------------|------------|-------------------|
-| **Urgency** | **99.0%** | 100% | 97.8% (181/185 concepts) |
-| **Sentiment** | **98.0%** | 100% | 95.7% (177/185 concepts) |
-| **Categories** | **97.3%** | 100% | 94.6% (175/185 concepts) |
-
-### Results: Keyword Cobweb (interpretable features)
-
-| Metric | Value |
-|--------|-------|
-| Feature space | 17 binary entity/keyword attributes |
-| Total leaf nodes (concepts) | 150 |
-| Total internal nodes | 80 |
-| Tree depth | 2 direct children from root |
-
-### Key findings
-
-**1. Near-perfect cluster purity** — TF-IDF Cobweb achieves **97–99% mean purity** across all three tasks. This means:
-- The **labels align almost perfectly with natural cluster structure**
-- The taxonomy is **not arbitrary** — the labels correspond to genuine textual patterns
-- Unsupervised clustering recovers the labeled structure without any training signal
-
-**2. The dataset has strong natural structure** — With 97.8% of urgency concepts having ≥80% purity, urgency levels are **naturally separable** in the text space. Same for sentiment (95.7%) and categories (94.6%).
-
-**3. Keyword features vs. TF-IDF** — Both approaches produce high purity. The keyword feature space (17 hand-crafted attributes) and TF-IDF (100 data-driven terms) capture essentially the same structure. Domain vocabulary is indeed the key discriminant.
-
-### Actual classification performance
-
-Cluster purity ≠ predictive power. Testing nearest-concept classifier:
-
-| Approach | Aggregate | Urgency | Sentiment | Categories | Supervision |
-|----------|-----------|---------|-----------|-----------|-------------|
-| SVM (TF-IDF) | **86.7%** | 88.2% | 83.8% | 87.9% | 132 labels |
-| FastText | **84.4%** | 89.7% | 86.8% | 76.8% | 132 labels |
-| **Cobweb classifier** | **54.9%** ❌ | **32.4%** ❌ | 55.9% ❌ | 76.5% | 132 labels |
-
-### Why high purity (97–99%) ≠ good classification
-
-**The paradox explained:**
-
-| Metric | Value | Meaning |
-|--------|-------|---------|
-| Mean purity | 99.0% | Concepts are internally consistent |
-| Classifier accuracy | 32.4% (urgency) | Test examples match to **wrong** concepts |
-
-**Root cause**: Cobweb builds 150+ highly-specific leaf concepts. When a test example is categorized:
-1. It matches to the **nearest** concept by feature similarity
-2. But "nearest" in keyword space ≠ "same label" 
-3. Small concept sizes (often 1–2 examples) = unreliable majority labels
-4. **Over-clustering**: concepts are pure but don't generalize
-
-**Key insight**: Unsupervised clustering finds natural structure, but the concept boundaries don't align with the classification task. Supervised methods (SVM, FastText) learn decision boundaries that optimize for the labels; Cobweb optimizes for feature coherence.
-
-### Key observation
-
-> **The labels emerge from the data structure**. Cobweb's unsupervised clustering recovers urgency, sentiment, and category labels with 97–99% purity. This is the strongest evidence that the task is **genuinely learnable** — the taxonomy isn't arbitrary or human-imposed; it reflects natural textual patterns in facility support messages.
-
-**Implications:**
-1. The **200-example dataset is sufficient** because the concepts are naturally separable
-2. **Classical ML success is explained** — TF-IDF + SVM works because it captures the same structure Cobweb discovers
-3. **LLM advantage may be limited** — if unsupervised clustering achieves high purity, the "knowledge gap" that requires LLM capabilities may be smaller than assumed
-
-### Paper implication
-
-Cobweb conceptual clustering achieves **97–99% mean purity** for urgency, sentiment, and categories without using any labels. This demonstrates that **the task taxonomy is emergent from the text**, not arbitrarily imposed. The high purity validates the entire experimental design: the dataset contains genuine conceptual structure that reasonable models (supervised or unsupervised) should recover.
-
-**Practical insight**: Despite near-perfect purity (97–99%), Cobweb achieves only **54.9%** aggregate — far below SVM (86.7%). This demonstrates a crucial distinction:
-
-- **Cluster purity** = internal consistency of discovered concepts
-- **Classification accuracy** = ability to generalize to new examples
-
-High purity does **not** guarantee good classification. The 86.7% SVM ceiling represents the true performance limit for this dataset — the remaining gap (~13pp) to perfect accuracy represents genuinely ambiguous cases, not recoverable by unsupervised methods.
-
----
 
 ## Phase 7 — LLM: Local Models via Ollama
 
@@ -610,7 +530,6 @@ can inject the `general_inquiries`-as-residual rule explicitly.
 | 5 | **Qwen 35B zero-shot** | **78.7%** | 70.6% | 70.6% | 94.9% | 0 | ~9.4s |
 | 6 | Gemma4 e4b zero-shot | ~73-75%* | — | — | — | 0 | ~9.4s |
 | 7 | Handwritten rules | 66.6% | 57.4% | 70.6% | 71.8% | 0 | 1-2ms |
-| 8 | **Cobweb** | **54.9%** ❌ | 32.4% | 55.9% | 76.5% | 132 | 5-20ms |
 | — | GPT-4.1-nano (published) | 75.4% | — | — | — | 0 | API |
 
 *From 20-example subset or reported in prior analysis.
@@ -626,12 +545,10 @@ Accuracy (%)
    │           ┌──┘
 80 ┤        ┌──┘     Entity-aug (81.9%)
    │     ┌──┘      Qwen 35B (78.7%)
-75 ┤  ┌──┘
-   │  │           GPT-4.1-nano (75.4%)
+75 ┤  ┌──┘        GPT-4.1-nano (75.4%)
+   │  │
 70 ┤  │  Rules (66.6%)
    │  │
-55 ┤  └── Cobweb (54.9%)
-   │
    └──────────────────────────────────────
       Low ◄──── Complexity ────► High
 ```
@@ -655,9 +572,7 @@ Accuracy (%)
 
 **3. LLMs fail at sentiment**: 70.6% (Qwen) vs. 83.8% (SVM) — 13pp gap confirms register/formality is hard for zero-shot prompting
 
-**4. Purity ≠ Performance**: Cobweb had 97-99% cluster purity but only 54.9% accuracy — unsupervised structure doesn't equal predictive power
-
-**5. The SVM ceiling stands**: 86.7% is the performance limit established by classical ML. The remaining ~13pp represents genuinely ambiguous cases.
+**4. The SVM ceiling stands**: 86.7% is the performance limit established by classical ML. The remaining ~13pp represents genuinely ambiguous cases.
 
 ### Paper implication
 
@@ -683,9 +598,8 @@ Approach                    Aggregate  Urgency  Sentiment  Categories  Train N
 01 Handwritten rules         66.6%      57.4%    70.6%      71.8%       0
 02 FastText                  84.4%      89.7%    86.8%      76.8%       132
 03 Classical ML (SVM)        86.7%      88.2%    83.8%      87.9%       132
-04 spaCy textcat             73.1%      82.4%    82.4%      54.7%       132
 04 spaCy entity-augmented    81.9%      80.9%    76.5%      88.4%       132
-05 Cobweb (keywords)         54.9%      32.4%    55.9%      76.5%       132
+05 spaCy textcat             73.1%      82.4%    82.4%      54.7%       132
 06 gemma4:e4b zero-shot      76.7%*     75.0%    65.0%      90.0%       0
 06 qwen3.6:35b-mlx zero-shot 78.7%      70.6%    70.6%      94.9%       0
 06 gemma4:e4b + GEPA         (pending)
@@ -749,10 +663,10 @@ Prediction: It closes the urgency gap partially (explicit equipment/hazard
 vocabulary maps directly to urgency=high). It does not close the sentiment gap
 because the negative register pattern is not captured by entity presence/absence.
 
-**Q5: Is the dataset large enough to train Cobweb / FastText meaningfully?**
-Prediction: Barely for FastText (200 examples is very thin for multi-label
-classification over 10 classes). Not really for Cobweb — the cluster structure
-will be noisy. Both will show high variance on the test set.
+**Q5: Is the dataset large enough to train FastText meaningfully?**
+Prediction: Barely — 200 examples is very thin for multi-label classification
+over 10 classes. FastText will show high variance on the test set, though
+hyperparameter search helps.
 
 ---
 

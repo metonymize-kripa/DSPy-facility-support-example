@@ -1,8 +1,0 @@
-{
-  "approach": "cobweb",
-  "variant": "keyword_features",
-  "model": "CobwebTree",
-  "n_examples": 200,
-  "n_features": 17,
-  "notes": "17 binary entity-group features; no labels used"
-}
