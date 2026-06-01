@@ -1,0 +1,87 @@
+[project]
+name = "facility-support-classifier"
+version = "0.1.0"
+description = "Design-space exploration: right-sizing ML solutions for a narrow facility support classification task"
+readme = "README.md"
+requires-python = ">=3.10"
+
+# Core deps available to all scripts
+dependencies = [
+    "requests>=2.31",
+]
+
+# Per-approach optional dependency groups.
+# Install:  uv sync --group <name>
+# Run:      uv run --group <name> <script>
+
+[dependency-groups]
+
+# 00_data_exploration
+data = [
+    "pandas>=2.0",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "wordcloud>=1.9",
+    "jupyter>=1.0",
+]
+
+# 01_handwritten_rules — stdlib only, no extra deps
+rules = []
+
+# 02_fasttext
+fasttext = [
+    "fasttext-wheel>=0.9.2",
+]
+
+# 03_classical_ml
+classical = [
+    "scikit-learn>=1.4",
+    "numpy>=1.26",
+]
+
+# 04_spacy
+spacy = [
+    "spacy>=3.7",
+    "scikit-learn>=1.4",
+]
+
+# 05_cobweb_dm
+# concept-formation latest release is 0.3.x — cap accordingly
+cobweb = [
+    "concept-formation>=0.3.9",   # Cobweb / Cobweb3 / Trestle
+    "scikit-learn>=1.4",          # clustering metrics for evaluation
+    "numpy>=1.26",
+]
+
+# 06_llm — Gemma4 via Ollama, DSPy + GEPA
+# Models run locally; no API keys needed for core experiments.
+# Ollama must be installed and running separately (not a pip package).
+llm = [
+    "dspy-ai>=2.5",
+    "gepa>=0.1",            # GEPA optimiser (separate from dspy-ai in some versions)
+    "python-dotenv>=1.0",   # for optional API key loading
+]
+
+# 07_evaluation
+eval = [
+    "pandas>=2.0",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "scikit-learn>=1.4",
+    "tabulate>=0.9",
+]
+
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+]
+
+[tool.uv]
+default-groups = ["data"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["shared"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
